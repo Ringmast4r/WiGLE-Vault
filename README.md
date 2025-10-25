@@ -31,6 +31,17 @@ The script will ask you to:
 
 All your CSVs download to the `vault` folder.
 
+**💡 Download Interrupted or Failed?**
+Just run the script again! It automatically skips files that already exist. Only missing files get downloaded.
+
+**Works for:**
+- Network timeouts
+- Power loss
+- Accidentally closing the window
+- Large files that timed out
+
+No wasted bandwidth. No duplicate downloads.
+
 ---
 
 **Advanced:** You can also provide the token as an argument:
@@ -50,9 +61,11 @@ python wigle_vault.py YOUR_TOKEN_HERE
 ## What It Does
 
 - Downloads every CSV file you ever uploaded to WiGLE
-- Skips files that already exist (you can resume if interrupted)
+- Handles files of ANY size (even 100+ MB cross-country logs)
+- Skips files that already exist (fully resumable)
 - Shows progress as it downloads
 - Works on Windows, Mac, Linux
+- Streaming downloads for memory efficiency
 
 ---
 
@@ -152,10 +165,14 @@ Yes - uses official WiGLE API, read-only access, open source code.
 NO! Direct HTTPS connection to WiGLE servers. Your data goes straight from WiGLE to your computer - nobody in between.
 
 **Can I stop and resume?**
-Yes - automatically skips files that already exist.
+YES! Just run it again. It will skip every file that already downloaded and only grab what's missing. Works even if:
+- Your internet cuts out
+- A large file times out
+- You accidentally close the window
+- Your computer restarts
 
 **How long does it take?**
-~1-2 seconds per file. 100 uploads = ~5 minutes.
+Depends on file sizes. Small files = 1-2 seconds. Massive 100+ MB logs might take a few minutes each. 100 uploads usually takes 5-10 minutes total.
 
 **Keep token secret?**
 YES! Don't share it, don't commit it to git.
