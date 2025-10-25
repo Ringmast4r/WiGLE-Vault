@@ -6,21 +6,30 @@ Download ALL your WiGLE wardriving data in one command.
 
 ## How to Use (3 Steps)
 
-### Step 1: Get Your Token
-
-1. Go to https://wigle.net/account
-2. Click **"Show my token"**
-3. Copy the **"Encoded for use"** value
-
-### Step 2: Run the Script
+### Step 1: Run the Script
 
 ```bash
-python wigle_vault.py PASTE_YOUR_TOKEN_HERE
+python wigle_vault.py
 ```
+
+### Step 2: Get Your Token When Prompted
+
+The script will ask you to:
+1. Visit https://wigle.net/account
+2. Click **"Show my token"**
+3. Copy the **"Encoded for use"** value
+4. Paste it into the command prompt
 
 ### Step 3: Done!
 
-All your CSVs download to the current folder.
+All your CSVs download to the `vault` folder.
+
+---
+
+**Advanced:** You can also provide the token as an argument:
+```bash
+python wigle_vault.py YOUR_TOKEN_HERE
+```
 
 ---
 

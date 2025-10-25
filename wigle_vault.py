@@ -11,8 +11,17 @@ Get token from: https://wigle.net/account (click "Show my token" -> copy "Encode
 """
 
 import sys
-import requests
 import os
+
+# Fix Windows console encoding for emojis
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError:
+        import codecs
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+
+import requests
 import time
 from pathlib import Path
 
@@ -25,15 +34,30 @@ __version__ = "1.0.0"
 def download_wigle_data(token, output_dir=None):
     """Download all WiGLE CSV files for the authenticated user"""
 
-    # Use current directory if not specified
-    if output_dir:
-        os.makedirs(output_dir, exist_ok=True)
-        os.chdir(output_dir)
+    # Create download folder if not specified
+    if not output_dir:
+        output_dir = "vault"
 
-    # Setup authentication
-    headers = {
-        "Authorization": f"Basic {token}",
+    # Get absolute path before changing directory
+    download_path = os.path.abspath(output_dir)
+
+    os.makedirs(output_dir, exist_ok=True)
+    os.chdir(output_dir)
+
+    # Setup authentication headers
+    auth_header = {"Authorization": f"Basic {token}"}
+
+    # Headers for transaction list API (returns JSON)
+    json_headers = {
+        **auth_header,
         "Accept": "application/json",
+        "User-Agent": f"WiGLE-Vault/{__version__}"
+    }
+
+    # Headers for CSV download (returns text/csv)
+    csv_headers = {
+        **auth_header,
+        "Accept": "text/csv, text/plain, */*",
         "User-Agent": f"WiGLE-Vault/{__version__}"
     }
 
@@ -41,7 +65,7 @@ def download_wigle_data(token, output_dir=None):
     print("🛰️  WiGLE Vault - Wardriving Data Backup Tool")
     print(f"    Version {__version__}")
     print("=" * 60)
-    print(f"📂 Download location: {os.getcwd()}\n")
+    print(f"📂 Saving to: {download_path}\n")
 
     # Track statistics
     total_files = 0
@@ -64,7 +88,7 @@ def download_wigle_data(token, output_dir=None):
         }
 
         try:
-            response = requests.get(TRANSACTIONS_URL, headers=headers, params=params, timeout=30)
+            response = requests.get(TRANSACTIONS_URL, headers=json_headers, params=params, timeout=30)
             response.raise_for_status()
             data = response.json()
 
@@ -106,7 +130,7 @@ def download_wigle_data(token, output_dir=None):
             try:
                 print(f"   ⬇️  Downloading {filename}...", end=" ", flush=True)
                 csv_url = CSV_DOWNLOAD_URL.format(trans_id)
-                csv_response = requests.get(csv_url, headers=headers, timeout=60)
+                csv_response = requests.get(csv_url, headers=csv_headers, timeout=60)
                 csv_response.raise_for_status()
 
                 # Save to file
@@ -142,7 +166,7 @@ def download_wigle_data(token, output_dir=None):
     if failed > 0:
         print(f"❌ Failed:                     {failed:,}")
     print(f"💾 Total data size:            {total_bytes:,} bytes ({total_bytes / 1024 / 1024:.2f} MB)")
-    print(f"📂 Location:                   {os.getcwd()}")
+    print(f"📂 Saved to:                   {download_path}")
     print("\n💡 Next Steps:")
     print("   • Import these CSVs into AirFence or your GIS software")
     print("   • Backup these files to cloud storage")
@@ -152,24 +176,32 @@ def download_wigle_data(token, output_dir=None):
 def main():
     """Main entry point"""
 
-    if len(sys.argv) < 2:
-        print("=" * 60)
-        print("🛰️  WiGLE Vault - Wardriving Data Backup Tool")
-        print(f"    Version {__version__}")
-        print("=" * 60)
-        print("\n❌ Usage: python wigle_vault.py <your-encoded-token> [output-directory]")
-        print("\n📖 How to get your token:")
+    print("=" * 60)
+    print("🛰️  WiGLE Vault - Wardriving Data Backup Tool")
+    print(f"    Version {__version__}")
+    print("=" * 60)
+    print()
+
+    # Check if token provided as argument
+    if len(sys.argv) >= 2:
+        token = sys.argv[1]
+        output_dir = sys.argv[2] if len(sys.argv) > 2 else None
+    else:
+        # Interactive mode - prompt user for token
+        print("📖 How to get your token:")
         print("   1. Visit https://wigle.net/account")
         print("   2. Click 'Show my token'")
         print("   3. Copy the 'Encoded for use' value")
-        print("   4. Run: python wigle_vault.py <paste-token-here>")
-        print("\n📂 Optional: Specify output directory")
-        print("   Example: python wigle_vault.py <token> ./my_wigle_data")
         print()
-        sys.exit(1)
 
-    token = sys.argv[1]
-    output_dir = sys.argv[2] if len(sys.argv) > 2 else None
+        token = input("🔑 Paste your WiGLE token here: ").strip()
+
+        if not token:
+            print("\n❌ Error: No token provided")
+            sys.exit(1)
+
+        output_dir = None
+        print()
 
     download_wigle_data(token, output_dir)
 

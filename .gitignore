@@ -34,6 +34,7 @@ env/
 
 # Downloaded CSVs (users' data)
 *.csv
+vault/
 
 # OS
 .DS_Store
