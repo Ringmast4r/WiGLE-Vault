@@ -1,5 +1,12 @@
 # WiGLE Vault 🛰️
 
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.6+-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)
+![GitHub stars](https://img.shields.io/github/stars/Ringmast4r/WiGLE-Vault?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Ringmast4r/WiGLE-Vault?style=social)
+![Maintenance](https://img.shields.io/badge/maintained-yes-green.svg)
+
 Download ALL your WiGLE wardriving data in one command.
 
 ---
@@ -75,7 +82,7 @@ python wigle_vault.py YOUR_TOKEN_HERE
 📂 Location:                   C:\Users\You\wigle_backup
 
 💡 Next Steps:
-   • Import these CSVs into AirFence or your GIS software
+   • Import these CSVs into your GIS software or analysis tools
    • Backup these files to cloud storage
    • Keep them safe - this is YOUR wardriving history!
 ```
@@ -93,10 +100,10 @@ python wigle_vault.py YOUR_TOKEN_HERE
 
 ### 📊 Data Analysis
 Import your CSVs into tools like:
-- **AirFence** - WiFi perimeter security analysis
 - **QGIS** - Geographic information system
 - **Excel/Google Sheets** - Spreadsheet analysis
 - **Python/R** - Custom data science workflows
+- **Wireshark** - Network analysis and mapping
 
 ### 💾 Backup Strategy
 - Keep local copies of your wardriving history
