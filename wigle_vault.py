@@ -183,9 +183,10 @@ def download_wigle_data(token, output_dir=None):
     print(f"💾 Total data size:            {total_bytes:,} bytes ({total_bytes / 1024 / 1024:.2f} MB)")
     print(f"📂 Saved to:                   {download_path}")
     print("\n💡 Next Steps:")
-    print("   • Import these CSVs into AirFence or your GIS software")
+    print("   • Import these CSVs into your GIS software or analysis tools")
     print("   • Backup these files to cloud storage")
     print("   • Keep them safe - this is YOUR wardriving history!")
+    print("\n- Love, Ringmast4r <3")
     print()
 
 def main():
