@@ -148,6 +148,9 @@ python wigle_vault.py <your-token>
 **Is this safe?**
 Yes - uses official WiGLE API, read-only access, open source code.
 
+**Can anyone intercept my data?**
+NO! Direct HTTPS connection to WiGLE servers. Your data goes straight from WiGLE to your computer - nobody in between.
+
 **Can I stop and resume?**
 Yes - automatically skips files that already exist.
 
