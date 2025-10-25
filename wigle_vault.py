@@ -130,16 +130,31 @@ def download_wigle_data(token, output_dir=None):
             try:
                 print(f"   ⬇️  Downloading {filename}...", end=" ", flush=True)
                 csv_url = CSV_DOWNLOAD_URL.format(trans_id)
-                csv_response = requests.get(csv_url, headers=csv_headers, timeout=60)
+
+                # Longer timeout for massive files (10 minutes)
+                # Some wardrivers have 100+ MB logs from cross-country trips
+                csv_response = requests.get(csv_url, headers=csv_headers, timeout=600, stream=True)
                 csv_response.raise_for_status()
 
-                # Save to file
+                # Save to file with streaming for large files
+                file_size = 0
                 with open(filename, 'wb') as f:
-                    f.write(csv_response.content)
+                    for chunk in csv_response.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                            file_size += len(chunk)
 
-                file_size = len(csv_response.content)
                 total_bytes += file_size
-                print(f"✅ ({file_size:,} bytes)")
+
+                # Show file size in human-readable format
+                if file_size > 1024 * 1024:
+                    size_str = f"{file_size / 1024 / 1024:.2f} MB"
+                elif file_size > 1024:
+                    size_str = f"{file_size / 1024:.2f} KB"
+                else:
+                    size_str = f"{file_size} bytes"
+
+                print(f"✅ ({size_str})")
                 downloaded += 1
 
                 # Be nice to the WiGLE API
