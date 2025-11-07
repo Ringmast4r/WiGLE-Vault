@@ -11,6 +11,31 @@ Download ALL your WiGLE wardriving data in one command.
 
 ---
 
+## 🎯 Quick Start (Choose Your Method)
+
+### Option A: Windows Executable (No Coding Required!)
+
+**Perfect for non-technical users!**
+
+1. Download the latest release from the [Releases page](https://github.com/Ringmast4r/WiGLE-Vault/releases)
+2. Extract the ZIP file
+3. Double-click `RUN_ME.bat` (or `WiGLE-Vault.exe`)
+4. Paste your WiGLE token when prompted
+5. Press ENTER and wait for downloads to complete
+
+**Features:**
+- ✅ No Python installation needed
+- ✅ Single-click execution
+- ✅ Automatic progress tracking
+- ✅ Resumes interrupted downloads
+- ✅ Complete instructions included
+
+📖 See `README_FOR_YOUR_PARTNER.txt` in the download for detailed instructions.
+
+---
+
+### Option B: Python Script (For Developers)
+
 ## How to Use (3 Steps)
 
 ### Step 1: Run the Script
