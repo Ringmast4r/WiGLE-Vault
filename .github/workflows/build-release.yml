@@ -1,0 +1,155 @@
+name: Build Multi-Platform Executables
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: WiGLE-Vault.exe
+            asset_name: WiGLE-Vault-Windows
+          - os: macos-latest
+            artifact_name: WiGLE-Vault
+            asset_name: WiGLE-Vault-macOS
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller requests
+
+      - name: Build executable
+        run: |
+          pyinstaller --onefile --console --name "WiGLE-Vault" wigle_vault.py
+
+      - name: Create distribution package (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Copy-Item "dist/WiGLE-Vault.exe" -Destination "."
+          Copy-Item "dist/HOW_TO_USE.txt" -Destination "." -ErrorAction SilentlyContinue
+          Copy-Item "dist/README_FOR_YOUR_PARTNER.txt" -Destination "." -ErrorAction SilentlyContinue
+          Copy-Item "dist/RUN_ME.bat" -Destination "." -ErrorAction SilentlyContinue
+
+          "@echo off`r`ntitle WiGLE-Vault - Wardriving Data Backup`r`ncolor 0A`r`necho.`r`necho ========================================`r`necho    WiGLE-Vault is starting...`r`necho ========================================`r`necho.`r`nWiGLE-Vault.exe`r`necho.`r`necho.`r`necho ========================================`r`necho    Program finished!`r`necho ========================================`r`necho.`r`npause" | Out-File -FilePath "RUN_ME.bat" -Encoding ASCII
+
+          "==========================================`r`n    WiGLE-VAULT - QUICK START GUIDE`r`n==========================================`r`n`r`n1. Double-click RUN_ME.bat`r`n2. Get your token from: https://wigle.net/account`r`n3. Paste token when prompted`r`n4. Press ENTER`r`n`r`nYour files will download to a 'vault' folder.`r`n`r`nFor detailed help, see README_FOR_YOUR_PARTNER.txt`r`n" | Out-File -FilePath "HOW_TO_USE.txt" -Encoding UTF8
+
+          Compress-Archive -Path "WiGLE-Vault.exe", "RUN_ME.bat", "HOW_TO_USE.txt" -DestinationPath "${{ matrix.asset_name }}.zip"
+
+      - name: Create distribution package (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          cp dist/WiGLE-Vault .
+          chmod +x WiGLE-Vault
+
+          cat > HOW_TO_USE.txt << 'EOF'
+==========================================
+    WiGLE-VAULT - QUICK START GUIDE
+==========================================
+
+1. Open Terminal (Applications > Utilities > Terminal)
+2. Navigate to this folder: cd ~/Downloads/WiGLE-Vault-macOS
+3. Run: ./WiGLE-Vault
+4. Get your token from: https://wigle.net/account
+5. Paste token when prompted
+6. Press ENTER
+
+Your files will download to a 'vault' folder.
+
+Note: First time running, you may need to allow it in:
+System Preferences > Security & Privacy
+
+EOF
+
+          cat > run.sh << 'EOF'
+#!/bin/bash
+cd "$(dirname "$0")"
+./WiGLE-Vault
+read -p "Press ENTER to close..."
+EOF
+          chmod +x run.sh
+
+          zip -r ${{ matrix.asset_name }}.zip WiGLE-Vault HOW_TO_USE.txt run.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ${{ matrix.asset_name }}.zip
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: WiGLE-Vault-Windows
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: WiGLE-Vault-macOS
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            WiGLE-Vault-Windows.zip
+            WiGLE-Vault-macOS.zip
+          body: |
+            ## Multi-Platform Release
+
+            Download the version for your operating system:
+
+            ### Windows
+            - Download `WiGLE-Vault-Windows.zip`
+            - Extract the ZIP file
+            - Double-click `RUN_ME.bat`
+            - No Python installation required
+
+            ### macOS
+            - Download `WiGLE-Vault-macOS.zip`
+            - Extract the ZIP file
+            - Double-click `run.sh` (or run `./WiGLE-Vault` in Terminal)
+            - No Python installation required
+            - You may need to allow the app in System Preferences > Security & Privacy
+
+            ### How to Use
+            1. Get your WiGLE token from https://wigle.net/account
+            2. Click "Show my token" and copy "Encoded for use"
+            3. Run the executable and paste your token
+            4. Press ENTER and wait for downloads
+
+            All your wardriving CSV files will be saved to a `vault` folder.
+
+            ### Features
+            - Automatic progress tracking
+            - Resumes interrupted downloads
+            - Skips already-downloaded files
+            - Memory-efficient streaming for large files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

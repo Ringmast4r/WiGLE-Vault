@@ -13,15 +13,25 @@ Download ALL your WiGLE wardriving data in one command.
 
 ## 🎯 Quick Start (Choose Your Method)
 
-### Option A: Windows Executable (No Coding Required!)
+### Option A: Pre-Built Executables (No Coding Required!)
 
 **Perfect for non-technical users!**
 
-1. Download the latest release from the [Releases page](https://github.com/Ringmast4r/WiGLE-Vault/releases)
+#### Windows
+1. Download `WiGLE-Vault-Windows.zip` from the [Releases page](https://github.com/Ringmast4r/WiGLE-Vault/releases)
 2. Extract the ZIP file
 3. Double-click `RUN_ME.bat` (or `WiGLE-Vault.exe`)
 4. Paste your WiGLE token when prompted
 5. Press ENTER and wait for downloads to complete
+
+#### macOS
+1. Download `WiGLE-Vault-macOS.zip` from the [Releases page](https://github.com/Ringmast4r/WiGLE-Vault/releases)
+2. Extract the ZIP file
+3. Double-click `run.sh` (or run `./WiGLE-Vault` in Terminal)
+4. Paste your WiGLE token when prompted
+5. Press ENTER and wait for downloads to complete
+
+**Note for macOS users:** First time running, you may need to allow the app in System Preferences > Security & Privacy
 
 **Features:**
 - ✅ No Python installation needed
@@ -29,8 +39,9 @@ Download ALL your WiGLE wardriving data in one command.
 - ✅ Automatic progress tracking
 - ✅ Resumes interrupted downloads
 - ✅ Complete instructions included
+- ✅ Works on Windows and macOS
 
-📖 See `README_FOR_YOUR_PARTNER.txt` in the download for detailed instructions.
+📖 See the included instructions in the download for detailed help.
 
 ---
 
